@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My First Website</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: #020617;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 0.5rem;
+      font-size: 1.8rem;
+    }
+
+    p {
+      opacity: 0.85;
+      margin-bottom: 1.5rem;
+    }
+
+    button {
+      background: #6366f1;
+      border: none;
+      color: white;
+      padding: 0.75rem 1.2rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #4f46e5;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>Hello, world</h1>
+    <p id="message">This website works.</p>
+    <button onclick="changeText()">Click me</button>
+  </div>
+
+  <script>
+    function changeText() {
+      document.getElementById("message").textContent =
+        "You just ran JavaScript from scratch.";
+    }
+  </script>
+</body>
+</html>
