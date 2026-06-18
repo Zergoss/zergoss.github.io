@@ -1,70 +1,281 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>My First Website</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, Arial, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
 
-    .card {
-      background: #020617;
-      padding: 2rem;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-      text-align: center;
-    }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    h1 {
-      margin-bottom: 0.5rem;
-      font-size: 1.8rem;
-    }
+:root {
+  --ink: #0f0e0d;
+  --ink-muted: #6b6760;
+  --ink-faint: #b8b4ae;
+  --paper: #f7f5f2;
+  --accent: #c84b2f;
+  --accent-soft: #f5ede9;
+  --border: rgba(15,14,13,0.10);
+  --mono: 'DM Mono', monospace;
+  --serif: 'DM Serif Display', serif;
+  --sans: 'DM Sans', sans-serif;
+}
 
-    p {
-      opacity: 0.85;
-      margin-bottom: 1.5rem;
-    }
+.wrap {
+  font-family: var(--sans);
+  background: var(--paper);
+  color: var(--ink);
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 4rem 4rem 5rem;
+}
 
-    button {
-      background: #6366f1;
-      border: none;
-      color: white;
-      padding: 0.75rem 1.2rem;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
 
-    button:hover {
-      background: #4f46e5;
-    }
-  </style>
-</head>
+h1 {
+  font-family: var(--serif);
+  font-size: 58px;
+  line-height: 1.1;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
 
-<body>
-  <div class="card">
-    <h1>Hello, world</h1>
-    <p id="message">This website works.</p>
-    <button onclick="changeText()">Click me</button>
+h1 em {
+  font-style: italic;
+  color: var(--ink-muted);
+}
+
+.tagline {
+  font-size: 19px;
+  font-weight: 300;
+  color: var(--ink-muted);
+  max-width: 600px;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.divider {
+  border: none;
+  border-top: 0.5px solid var(--border);
+  margin: 2rem 0;
+}
+
+.section-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 1rem;
+}
+
+.offer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 2.5rem;
+}
+
+.offer-card {
+  background: white;
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  padding: 1.1rem 1.25rem;
+}
+
+.offer-card .title {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+
+.offer-card .desc {
+  font-size: 13px;
+  color: var(--ink-muted);
+  line-height: 1.55;
+}
+
+.stack-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 2rem;
+}
+
+.tag {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: white;
+  border: 0.5px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 10px;
+  color: var(--ink-muted);
+}
+
+.tag.primary {
+  background: var(--accent-soft);
+  border-color: rgba(200, 75, 47, 0.2);
+  color: var(--accent);
+}
+
+.proof-block {
+  background: white;
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.proof-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.proof-stat:last-child { border-bottom: none; }
+
+.stat-num {
+  font-family: var(--serif);
+  font-size: 26px;
+  color: var(--ink);
+  min-width: 60px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--ink-muted);
+  line-height: 1.4;
+}
+
+.cta-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  border-radius: 6px;
+  padding: 12px 24px;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+}
+
+.btn-secondary {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.contact-line {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-faint);
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 0.5px solid var(--border);
+}
+
+.contact-line a {
+  color: var(--ink-muted);
+}
+
+@media (max-width: 900px) {
+  .offer-grid { grid-template-columns: 1fr 1fr; }
+  .wrap { padding: 3rem 2rem 4rem; }
+  h1 { font-size: 42px; }
+}
+
+@media (max-width: 480px) {
+  .offer-grid { grid-template-columns: 1fr; }
+  h1 { font-size: 32px; }
+}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Available for contract work</p>
+
+  <h1>Fullstack<br><em>developer for hire.</em></h1>
+  <p class="tagline">I build reliable, maintainable software — internal tools, APIs, case management systems — with the discipline of enterprise work and without the enterprise timeline.</p>
+
+  <hr class="divider">
+
+  <p class="section-label">What I can build for you</p>
+  <div class="offer-grid">
+    <div class="offer-card">
+      <p class="title">Internal tools & dashboards</p>
+      <p class="desc">Custom admin panels, approval workflows, reporting tools. Built on .NET + Angular — the same stack used in mission-critical government systems.</p>
+    </div>
+    <div class="offer-card">
+      <p class="title">REST APIs & integrations</p>
+      <p class="desc">Clean, documented Web APIs that connect your systems. Entity Framework + SQL — performant, maintainable, production-ready.</p>
+    </div>
+    <div class="offer-card">
+      <p class="title">Legacy modernization</p>
+      <p class="desc">I've worked in codebases with years of technical debt. I can assess, document, and incrementally improve yours without breaking what works.</p>
+    </div>
+    <div class="offer-card">
+      <p class="title">Feature development</p>
+      <p class="desc">Already have a team? I slot in cleanly. Code reviews, sprint ceremonies, clean commits — I've done this in Agile teams for years.</p>
+    </div>
   </div>
 
-  <script>
-    function changeText() {
-      document.getElementById("message").textContent =
-        "You just ran JavaScript from scratch.";
-    }
-  </script>
-</body>
-</html>
+  <p class="section-label">Stack</p>
+  <div class="stack-row">
+    <span class="tag primary">C# / .NET</span>
+    <span class="tag primary">Angular</span>
+    <span class="tag primary">SQL / Entity Framework</span>
+    <span class="tag">HTML / CSS</span>
+    <span class="tag">TypeScript</span>
+    <span class="tag">Azure DevOps</span>
+    <span class="tag">Web API</span>
+    <span class="tag">Node.js</span>
+    <span class="tag">Python</span>
+    <span class="tag">Git</span>
+    <span class="tag">Agile / Scrum</span>
+    <span class="tag">PowerShell</span>
+  </div>
+
+  <p class="section-label">Track record</p>
+  <div class="proof-block">
+    <div class="proof-stat">
+      <span class="stat-num">4+</span>
+      <span class="stat-label">Years shipping production software at the Government of Canada — case management, interfaces, automation</span>
+    </div>
+    <div class="proof-stat">
+      <span class="stat-num">2</span>
+      <span class="stat-label">Teams and codebases contributed to simultaneously, across web and desktop applications</span>
+    </div>
+    <div class="proof-stat">
+      <span class="stat-num">EN/FR</span>
+      <span class="stat-label">Bilingual — comfortable working with clients and teams in both English and French</span>
+    </div>
+  </div>
+
+  <p class="section-label">Work with me</p>
+  <div class="cta-row">
+    <a href="https://docs.google.com/document/d/10rXa5_UqjA8K07F41OMO4dscp4sgS00M-VsO6_rvPcE/edit?usp=sharing" target="_blank" class="btn-primary">See Résumé ↗</a>
+  </div>
+
+  <div class="contact-line">
+    Raphael Roy-Laurore &nbsp;·&nbsp; Ottawa, ON &nbsp;·&nbsp; <a href="mailto:rroylaur@gmail.com">rroylaur@gmail.com</a> &nbsp;·&nbsp; 343-204-5149
+  </div>
+</div>
