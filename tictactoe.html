@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tic-Tac-Toe</title>
+<style>
+  /* ===== Theming via CSS custom properties ===== */
+  :root {
+    --bg: #0f1226;
+    --bg-grad-1: #1a1f4d;
+    --bg-grad-2: #0f1226;
+    --panel: rgba(255, 255, 255, 0.06);
+    --panel-border: rgba(255, 255, 255, 0.12);
+    --cell-bg: rgba(255, 255, 255, 0.04);
+    --cell-hover: rgba(255, 255, 255, 0.12);
+    --text: #eef1ff;
+    --text-dim: #9aa3c7;
+    --x-color: #4dd0ff;
+    --o-color: #ff6ec7;
+    --accent: #7c5cff;
+    --win: #36e0a4;
+    --shadow: rgba(0, 0, 0, 0.45);
+  }
+  [data-theme="light"] {
+    --bg: #eef1fb;
+    --bg-grad-1: #ffffff;
+    --bg-grad-2: #dfe5fb;
+    --panel: rgba(255, 255, 255, 0.7);
+    --panel-border: rgba(20, 20, 60, 0.12);
+    --cell-bg: rgba(255, 255, 255, 0.8);
+    --cell-hover: rgba(124, 92, 255, 0.12);
+    --text: #1a1f3d;
+    --text-dim: #5a628a;
+    --x-color: #1488d8;
+    --o-color: #d6308f;
+    --accent: #7c5cff;
+    --win: #15b97e;
+    --shadow: rgba(60, 60, 120, 0.2);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--text);
+    background: radial-gradient(circle at 50% 0%, var(--bg-grad-1), var(--bg-grad-2));
+    background-color: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* ===== Header ===== */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    background: linear-gradient(90deg, var(--x-color), var(--o-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .theme-toggle {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    color: var(--text);
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: transform 0.2s ease, background 0.3s ease;
+  }
+  .theme-toggle:hover { transform: scale(1.08); background: var(--cell-hover); }
+
+  /* ===== Generic panel ===== */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 16px;
+    padding: 14px;
+    backdrop-filter: blur(8px);
+  }
+
+  /* ===== Controls (mode + difficulty) ===== */
+  .controls { display: flex; flex-direction: column; gap: 12px; }
+  .control-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .control-label { font-size: 0.8rem; color: var(--text-dim); width: 70px; flex-shrink: 0; }
+
+  .seg {
+    display: flex;
+    background: var(--cell-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 3px;
+    flex: 1;
+  }
+  .seg button {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+  .seg button.active {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 4px 12px var(--shadow);
+  }
+  .seg button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  #difficulty-row.hidden { display: none; }
+
+  /* ===== Status bar ===== */
+  .status {
+    text-align: center;
+    font-size: 1.05rem;
+    font-weight: 700;
+    padding: 10px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .status .mark-x { color: var(--x-color); }
+  .status .mark-o { color: var(--o-color); }
+
+  /* ===== Board ===== */
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 10px;
+    aspect-ratio: 1 / 1;
+  }
+  .cell {
+    background: var(--cell-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 14px;
+    font-size: clamp(2.4rem, 14vw, 3.6rem);
+    font-weight: 800;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    color: var(--text);
+    transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.3s ease;
+    user-select: none;
+  }
+  .cell:hover:not(.filled):not(:disabled) { background: var(--cell-hover); }
+  .cell:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+  .cell:disabled { cursor: default; }
+  .cell.x { color: var(--x-color); }
+  .cell.o { color: var(--o-color); }
+  .cell .mark {
+    display: inline-block;
+    animation: pop 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  }
+  @keyframes pop {
+    0%   { transform: scale(0) rotate(-12deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  .cell.win {
+    background: var(--win);
+    color: #06241a !important;
+    box-shadow: 0 0 24px var(--win);
+    animation: winpulse 0.9s ease infinite alternate;
+  }
+  @keyframes winpulse {
+    from { box-shadow: 0 0 12px var(--win); }
+    to   { box-shadow: 0 0 30px var(--win); }
+  }
+
+  /* ===== Scoreboard ===== */
+  .scoreboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    text-align: center;
+  }
+  .score {
+    background: var(--cell-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 10px 6px;
+  }
+  .score .label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+  .score .value { font-size: 1.5rem; font-weight: 800; margin-top: 2px; }
+  .score.x .value { color: var(--x-color); }
+  .score.o .value { color: var(--o-color); }
+
+  /* ===== Buttons ===== */
+  .actions { display: flex; gap: 10px; }
+  .btn {
+    flex: 1;
+    border: 1px solid var(--panel-border);
+    background: var(--panel);
+    color: var(--text);
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.25s ease;
+  }
+  .btn:hover { transform: translateY(-2px); background: var(--cell-hover); }
+  .btn:active { transform: translateY(0); }
+  .btn.primary { background: var(--accent); color: #fff; border-color: transparent; }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  footer { text-align: center; font-size: 0.72rem; color: var(--text-dim); }
+</style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <h1>Tic-Tac-Toe</h1>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark and light mode" title="Toggle theme">🌙</button>
+    </header>
+
+    <!-- Game configuration -->
+    <section class="panel controls" aria-label="Game settings">
+      <div class="control-row">
+        <span class="control-label" id="mode-label">Mode</span>
+        <div class="seg" role="group" aria-labelledby="mode-label">
+          <button data-mode="2p" class="active" aria-pressed="true">2 Players</button>
+          <button data-mode="cpu" aria-pressed="false">vs Computer</button>
+        </div>
+      </div>
+      <div class="control-row hidden" id="difficulty-row">
+        <span class="control-label" id="diff-label">CPU</span>
+        <div class="seg" role="group" aria-labelledby="diff-label">
+          <button data-diff="easy" aria-pressed="false">Easy</button>
+          <button data-diff="hard" class="active" aria-pressed="true">Hard (Unbeatable)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Turn / result status -->
+    <div class="panel status" id="status" role="status" aria-live="polite">Player <span class="mark-x">X</span>'s turn</div>
+
+    <!-- The 3x3 board -->
+    <div class="board" id="board" role="grid" aria-label="Tic Tac Toe board"></div>
+
+    <!-- Scoreboard -->
+    <section class="scoreboard" aria-label="Scoreboard">
+      <div class="score x"><div class="label">X Wins</div><div class="value" id="score-x">0</div></div>
+      <div class="score"><div class="label">Draws</div><div class="value" id="score-d">0</div></div>
+      <div class="score o"><div class="label">O Wins</div><div class="value" id="score-o">0</div></div>
+    </section>
+
+    <div class="actions">
+      <button class="btn primary" id="new-game">New Game</button>
+      <button class="btn" id="reset-scores">Reset Scores</button>
+    </div>
+
+    <footer>Use arrow keys / Tab to move, Enter or Space to play.</footer>
+  </main>
+
+<script>
+/* =====================================================================
+   TIC-TAC-TOE
+   Architecture: pure game LOGIC is kept separate from RENDERING / DOM.
+   - `state` holds all mutable game data.
+   - Logic functions (checkWinner, minimax, etc.) never touch the DOM.
+   - Render functions read `state` and update the DOM.
+   ===================================================================== */
+
+// ---- Constants ----
+const HUMAN_X = 'X';
+const PLAYER_O = 'O';
+
+// All 8 winning lines, expressed as board index triples (0..8).
+const WIN_LINES = [
+  [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+  [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+  [0, 4, 8], [2, 4, 6]             // diagonals
+];
+
+// ---- Game state (single source of truth) ----
+const state = {
+  board: Array(9).fill(null), // null | 'X' | 'O'
+  current: HUMAN_X,           // whose turn it is
+  active: true,               // false once the game has ended
+  mode: '2p',                 // '2p' | 'cpu'
+  difficulty: 'hard',         // 'easy' | 'hard'
+  winningLine: null,          // array of 3 indices when someone wins
+  scores: { X: 0, O: 0, D: 0 }
+};
+
+/* =====================================================================
+   PURE GAME LOGIC  (no DOM access)
+   ===================================================================== */
+
+/**
+ * Inspect a board and return the winner info, if any.
+ * @returns {{winner:'X'|'O', line:number[]} | null}
+ */
+function checkWinner(board) {
+  for (const line of WIN_LINES) {
+    const [a, b, c] = line;
+    // A line wins if all three cells are filled with the same mark.
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+      return { winner: board[a], line };
+    }
+  }
+  return null;
+}
+
+/** True when every cell is filled. */
+function isBoardFull(board) {
+  return board.every(cell => cell !== null);
+}
+
+/** Indices of all empty cells. */
+function emptyCells(board) {
+  const cells = [];
+  for (let i = 0; i < 9; i++) if (!board[i]) cells.push(i);
+  return cells;
+}
+
+/* ---------------------------------------------------------------------
+   MINIMAX  — the unbeatable AI.
+   The computer plays 'O' and tries to MAXIMISE its score; the human
+   plays 'X' and is assumed to MINIMISE it. We recurse through every
+   possible future board, score terminal states, and back the best
+   value up the tree. `depth` rewards faster wins / slower losses so
+   the AI prefers quick victories and drags out inevitable defeats.
+   ------------------------------------------------------------------- */
+function minimax(board, isMaximizing, depth) {
+  const result = checkWinner(board);
+  if (result) return { score: (result.winner === PLAYER_O ? 10 - depth : depth - 10) };
+  if (isBoardFull(board)) return { score: 0 }; // draw
+
+  let best = { score: isMaximizing ? -Infinity : Infinity, index: -1 };
+
+  for (const idx of emptyCells(board)) {
+    board[idx] = isMaximizing ? PLAYER_O : HUMAN_X; // try this move
+    const { score } = minimax(board, !isMaximizing, depth + 1);
+    board[idx] = null; // undo (backtrack)
+
+    if (isMaximizing ? score > best.score : score < best.score) {
+      best = { score, index: idx };
+    }
+  }
+  return best;
+}
+
+/** Choose the computer's move based on difficulty. Returns a cell index. */
+function computeAIMove(board, difficulty) {
+  const options = emptyCells(board);
+  if (difficulty === 'easy') {
+    // Easy: pick a random empty cell.
+    return options[Math.floor(Math.random() * options.length)];
+  }
+  // Hard: optimal play via minimax (computer maximises).
+  return minimax(board, true, 0).index;
+}
+
+/* =====================================================================
+   RENDERING  (reads `state`, writes to the DOM)
+   ===================================================================== */
+
+const boardEl   = document.getElementById('board');
+const statusEl  = document.getElementById('status');
+const scoreXEl  = document.getElementById('score-x');
+const scoreOEl  = document.getElementById('score-o');
+const scoreDEl  = document.getElementById('score-d');
+const diffRow   = document.getElementById('difficulty-row');
+
+// Build the 9 cell buttons once; we reuse them for the life of the page.
+const cellEls = [];
+for (let i = 0; i < 9; i++) {
+  const btn = document.createElement('button');
+  btn.className = 'cell';
+  btn.setAttribute('role', 'gridcell');
+  btn.dataset.index = i;
+  btn.setAttribute('aria-label', `Cell ${i + 1}, empty`);
+  btn.addEventListener('click', () => handleMove(i));
+  boardEl.appendChild(btn);
+  cellEls.push(btn);
+}
+
+/** Sync the entire board UI from `state.board`. */
+function renderBoard() {
+  state.board.forEach((mark, i) => {
+    const cell = cellEls[i];
+    const filled = mark !== null;
+    // Only inject markup when it changes, so the pop animation fires once.
+    if (filled && !cell.classList.contains('filled')) {
+      cell.innerHTML = `<span class="mark">${mark}</span>`;
+      cell.classList.add('filled', mark.toLowerCase());
+    } else if (!filled) {
+      cell.innerHTML = '';
+      cell.classList.remove('filled', 'x', 'o', 'win');
+    }
+    cell.disabled = filled || !state.active;
+    cell.setAttribute('aria-label', `Cell ${i + 1}, ${filled ? mark : 'empty'}`);
+  });
+
+  // Highlight the winning line, if there is one.
+  if (state.winningLine) {
+    state.winningLine.forEach(i => cellEls[i].classList.add('win'));
+  }
+}
+
+/** Update the status line (turn indicator or result). */
+function renderStatus(message) {
+  if (message) { statusEl.innerHTML = message; return; }
+  const cls = state.current === HUMAN_X ? 'mark-x' : 'mark-o';
+  statusEl.innerHTML = `Player <span class="${cls}">${state.current}</span>'s turn`;
+}
+
+/** Update the scoreboard numbers. */
+function renderScores() {
+  scoreXEl.textContent = state.scores.X;
+  scoreOEl.textContent = state.scores.O;
+  scoreDEl.textContent = state.scores.D;
+}
+
+/* =====================================================================
+   GAME FLOW  (ties logic + rendering together)
+   ===================================================================== */
+
+/** Handle a move at `index` (from a click, key, or… not the AI path). */
+function handleMove(index) {
+  // Ignore clicks on filled cells or after the game is over.
+  if (!state.active || state.board[index]) return;
+
+  placeMark(index, state.current);
+  if (finishIfOver()) return;
+
+  // Switch turns.
+  state.current = state.current === HUMAN_X ? PLAYER_O : HUMAN_X;
+  renderStatus();
+
+  // If it's the computer's turn, let it move after a short, natural pause.
+  if (state.mode === 'cpu' && state.current === PLAYER_O && state.active) {
+    lockBoard(true);
+    setTimeout(aiTurn, 380);
+  }
+}
+
+/** Place a mark in the model and re-render that part of the board. */
+function placeMark(index, mark) {
+  state.board[index] = mark;
+  renderBoard();
+}
+
+/** The computer takes its turn. */
+function aiTurn() {
+  const index = computeAIMove(state.board, state.difficulty);
+  if (index === undefined || index < 0) return;
+  placeMark(index, PLAYER_O);
+  lockBoard(false);
+  if (finishIfOver()) return;
+  state.current = HUMAN_X;
+  renderStatus();
+}
+
+/**
+ * If the game has ended (win or draw), record it, announce it, and
+ * return true. Otherwise return false.
+ */
+function finishIfOver() {
+  const result = checkWinner(state.board);
+  if (result) {
+    state.active = false;
+    state.winningLine = result.line;
+    state.scores[result.winner]++;
+    renderBoard();
+    renderScores();
+    const cls = result.winner === HUMAN_X ? 'mark-x' : 'mark-o';
+    const who = state.mode === 'cpu'
+      ? (result.winner === HUMAN_X ? 'You win!' : 'Computer wins!')
+      : `Player <span class="${cls}">${result.winner}</span> wins!`;
+    renderStatus(`🎉 ${who}`);
+    return true;
+  }
+  if (isBoardFull(state.board)) {
+    state.active = false;
+    state.scores.D++;
+    renderScores();
+    renderStatus("It's a draw! 🤝");
+    return true;
+  }
+  return false;
+}
+
+/** Temporarily disable the board (e.g. while the AI is "thinking"). */
+function lockBoard(locked) {
+  cellEls.forEach((cell, i) => {
+    cell.disabled = locked || state.board[i] !== null || !state.active;
+  });
+}
+
+/** Start a fresh round (scores are preserved). */
+function newGame() {
+  state.board = Array(9).fill(null);
+  state.current = HUMAN_X;
+  state.active = true;
+  state.winningLine = null;
+  cellEls.forEach(c => c.classList.remove('win'));
+  renderBoard();
+  renderStatus();
+}
+
+/* =====================================================================
+   SETTINGS, KEYBOARD NAV & THEME
+   ===================================================================== */
+
+// Mode selector (2 players vs computer)
+document.querySelectorAll('[data-mode]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.mode = btn.dataset.mode;
+    document.querySelectorAll('[data-mode]').forEach(b => {
+      const on = b === btn;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on);
+    });
+    diffRow.classList.toggle('hidden', state.mode !== 'cpu');
+    newGame();
+  });
+});
+
+// Difficulty selector
+document.querySelectorAll('[data-diff]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.difficulty = btn.dataset.diff;
+    document.querySelectorAll('[data-diff]').forEach(b => {
+      const on = b === btn;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on);
+    });
+    newGame();
+  });
+});
+
+document.getElementById('new-game').addEventListener('click', newGame);
+document.getElementById('reset-scores').addEventListener('click', () => {
+  state.scores = { X: 0, O: 0, D: 0 };
+  renderScores();
+});
+
+// Keyboard navigation across the grid (arrow keys move focus).
+boardEl.addEventListener('keydown', (e) => {
+  const idx = cellEls.indexOf(document.activeElement);
+  if (idx === -1) return;
+  let next = -1;
+  if (e.key === 'ArrowRight') next = (idx + 1) % 9;
+  else if (e.key === 'ArrowLeft') next = (idx + 8) % 9;
+  else if (e.key === 'ArrowDown') next = (idx + 3) % 9;
+  else if (e.key === 'ArrowUp') next = (idx + 6) % 9;
+  if (next !== -1) { e.preventDefault(); cellEls[next].focus(); }
+});
+
+// Theme toggle (dark <-> light)
+const themeToggle = document.getElementById('theme-toggle');
+themeToggle.addEventListener('click', () => {
+  const root = document.documentElement;
+  const light = root.getAttribute('data-theme') === 'light';
+  root.setAttribute('data-theme', light ? 'dark' : 'light');
+  themeToggle.textContent = light ? '🌙' : '☀️';
+});
+
+// ---- Initial paint ----
+renderBoard();
+renderStatus();
+renderScores();
+</script>
+</body>
+</html>
