@@ -1,5 +1,5 @@
 // Zero-dependency smoke tests for the static site.
-// Run with:  node --test tests/
+// Run with:  node --test tests/*.test.mjs
 // (Node's built-in test runner — no npm install required.)
 
 import { test } from 'node:test';

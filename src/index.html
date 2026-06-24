@@ -159,6 +159,58 @@ h1 em {
   line-height: 1.4;
 }
 
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 2rem;
+}
+
+.project-card {
+  display: block;
+  background: white;
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  padding: 1.1rem 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.project-card:hover {
+  border-color: rgba(200, 75, 47, 0.35);
+  transform: translateY(-2px);
+}
+
+.project-card .kicker {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.project-card .title {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+
+.project-card .desc {
+  font-size: 13px;
+  color: var(--ink-muted);
+  line-height: 1.55;
+  margin-bottom: 10px;
+}
+
+.project-card .link-cue {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
 .cta-row {
   display: flex;
   align-items: center;
@@ -205,12 +257,14 @@ h1 em {
 
 @media (max-width: 900px) {
   .offer-grid { grid-template-columns: 1fr 1fr; }
+  .project-grid { grid-template-columns: 1fr 1fr; }
   .wrap { padding: 3rem 2rem 4rem; }
   h1 { font-size: 42px; }
 }
 
 @media (max-width: 480px) {
   .offer-grid { grid-template-columns: 1fr; }
+  .project-grid { grid-template-columns: 1fr; }
   h1 { font-size: 32px; }
 }
 </style>
@@ -259,6 +313,7 @@ h1 em {
     <span class="tag">Git</span>
     <span class="tag">Agile / Scrum</span>
     <span class="tag">PowerShell</span>
+    <span class="tag">AI</span>
   </div>
 
   <p class="section-label">Track record</p>
@@ -275,6 +330,16 @@ h1 em {
       <span class="stat-num">EN/FR</span>
       <span class="stat-label">Bilingual — comfortable working with clients and teams in both English and French</span>
     </div>
+  </div>
+
+  <p class="section-label">Projects</p>
+  <div class="project-grid">
+    <a href="game/tictactoe.html" class="project-card">
+      <p class="kicker">Web App · Vanilla JS</p>
+      <p class="title">Tic-Tac-Toe</p>
+      <p class="desc">A polished, single-file game with an unbeatable minimax AI, two-player mode, live scoreboard, and dark/light themes.</p>
+      <span class="link-cue">Play it →</span>
+    </a>
   </div>
 
   <p class="section-label">Work with me</p>

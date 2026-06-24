@@ -30,7 +30,7 @@ python -m http.server -d src 8000
 ## Test
 
 ```bash
-node --test tests/
+node --test tests/*.test.mjs
 ```
 
 ## Deploy

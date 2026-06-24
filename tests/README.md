@@ -4,7 +4,7 @@ Smoke tests for the static site, written against Node's built-in test runner
 (no dependencies, no `npm install`).
 
 ```bash
-node --test tests/
+node --test tests/*.test.mjs
 ```
 
 `smoke.test.mjs` checks that each page in `src/` is a complete HTML document
